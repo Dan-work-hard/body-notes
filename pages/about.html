@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>关于 · Body Notes</title>
+  <link rel="stylesheet" href="../css/style.css" />
+  <style>
+    .about-page { padding: 3rem 1.5rem 5rem; }
+    .about-inner { max-width: 680px; margin: 0 auto; }
+    .about-hero {
+      margin-bottom: 4rem;
+      position: relative;
+    }
+    .about-hero__bg {
+      position: absolute;
+      top: -0.05em; right: 0;
+      font-family: var(--font-display);
+      font-size: 12rem;
+      font-weight: 800;
+      font-style: italic;
+      color: transparent;
+      -webkit-text-stroke: 1px var(--bg-border);
+      line-height: 0.85;
+      user-select: none;
+      pointer-events: none;
+    }
+    .about-hero__content { position: relative; z-index: 1; }
+    .about-hero h1 {
+      font-family: var(--font-display);
+      font-size: clamp(2.5rem, 6vw, 4.5rem);
+      font-weight: 800;
+      text-transform: uppercase;
+      line-height: 0.95;
+      margin-bottom: 1.25rem;
+    }
+    .about-hero h1 .acc { color: var(--accent); font-style: italic; }
+    .about-hero p {
+      font-size: 1rem;
+      color: var(--text-secondary);
+      line-height: 1.8;
+      max-width: 480px;
+    }
+
+    .about-section { margin-bottom: 3rem; }
+    .about-section h2 {
+      font-family: var(--font-display);
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.75rem;
+    }
+    .about-section p {
+      font-size: 0.95rem;
+      line-height: 1.8;
+      color: var(--text-primary);
+      margin-bottom: 0.75rem;
+    }
+
+    .promise-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 1px;
+      background: var(--bg-border);
+      border: 1px solid var(--bg-border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      margin-bottom: 3rem;
+    }
+    .promise-item {
+      background: var(--bg-raised);
+      padding: 1.5rem 1.25rem;
+      text-align: center;
+    }
+    .promise-item .ico { font-size: 1.75rem; margin-bottom: 0.6rem; }
+    .promise-item p {
+      font-family: var(--font-display);
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--accent);
+      line-height: 1.4;
+    }
+  </style>
+</head>
+<body>
+  <div id="nav"></div>
+  <main class="about-page">
+    <div class="about-inner">
+
+      <div class="about-hero fade-up">
+        <div class="about-hero__bg" aria-hidden="true">WHY</div>
+        <div class="about-hero__content">
+          <h1>为什么<br>做这个<br><span class="acc">网站</span></h1>
+          <p>女性的身体每个月都在变化，但大多数健身内容把我们当成默认男性对待。这里想做的事很简单：帮你在对的时间做对的事。</p>
+        </div>
+      </div>
+
+      <div class="promise-grid">
+        <div class="promise-item"><div class="ico">🚫</div><p>无广告<br>无推销</p></div>
+        <div class="promise-item"><div class="ico">🔒</div><p>数据不<br>对外共享</p></div>
+        <div class="promise-item"><div class="ico">💚</div><p>真实教练<br>亲自设计</p></div>
+        <div class="promise-item"><div class="ico">♾</div><p>永久<br>免费</p></div>
+      </div>
+
+      <div class="about-section">
+        <h2>这是一个公益工具</h2>
+        <p>没有广告，没有课程销售，没有导流。所有内容免费，永远免费。由我一个人用业余时间做出来，目的是把自己学到的东西分享给更多女性。</p>
+        <p>如果你觉得有帮助，最好的支持方式就是分享给你认识的女性朋友。</p>
+      </div>
+
+      <div class="about-section">
+        <h2>内容怎么来的</h2>
+        <p>所有动作视频都是我自己拍的，在自家训练空间录制，用真实动作演示。动作注意事项、体感描述、周期推荐逻辑都经过反复修改，目标是让每条建议都能直接执行。</p>
+      </div>
+
+      <div class="about-section">
+        <h2>联系</h2>
+        <p>有问题或建议：<a href="mailto:hello@example.com" style="color:var(--accent)">hello@example.com</a></p>
+        <p style="font-size:0.82rem;color:var(--text-secondary)">⚠️ 无法回复医疗健康问题，请咨询专业医生。</p>
+      </div>
+
+      <a href="../index.html" class="btn btn--primary btn--lg">开始使用 →</a>
+    </div>
+  </main>
+  <script src="../js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Body Notes · 女性健身指南</title>
+  <meta name="description" content="根据你的月经周期和今日体感，告诉你今天怎么练、怎么吃。纯公益，无广告。" />
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    /* ── 首页专属 ── */
+
+    /* 英雄区 */
+    .hero {
+      position: relative;
+      min-height: calc(100vh - 60px);
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+      padding: 4rem 2rem;
+    }
+
+    /* 装饰：大号背景数字 */
+    .hero__bg-num {
+      position: absolute;
+      right: -0.05em;
+      top: 50%;
+      transform: translateY(-50%);
+      font-family: var(--font-display);
+      font-size: clamp(14rem, 28vw, 26rem);
+      font-weight: 800;
+      font-style: italic;
+      color: transparent;
+      -webkit-text-stroke: 1px var(--bg-border);
+      pointer-events: none;
+      user-select: none;
+      line-height: 0.9;
+      letter-spacing: -0.04em;
+    }
+
+    /* 装饰：绿色光点 */
+    .hero__glow {
+      position: absolute;
+      width: 420px; height: 420px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(181,255,71,0.07) 0%, transparent 65%);
+      top: 10%; left: -10%;
+      pointer-events: none;
+    }
+
+    .hero__content {
+      position: relative;
+      z-index: 1;
+      max-width: 680px;
+    }
+
+    /* 小标签 */
+    .hero__label {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: var(--font-display);
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 1.25rem;
+    }
+    .hero__label::before {
+      content: '';
+      display: block;
+      width: 20px; height: 2px;
+      background: var(--accent);
+    }
+
+    /* 主标题 */
+    .hero__title {
+      font-family: var(--font-display);
+      font-size: clamp(3.2rem, 8vw, 7rem);
+      font-weight: 800;
+      line-height: 0.92;
+      letter-spacing: -0.02em;
+      text-transform: uppercase;
+      margin-bottom: 1.5rem;
+    }
+    .hero__title .line1 { color: var(--text-primary); display: block; }
+    .hero__title .line2 {
+      color: transparent;
+      -webkit-text-stroke: 1.5px var(--text-primary);
+      display: block;
+    }
+    .hero__title .line3 {
+      color: var(--accent);
+      display: block;
+      font-style: italic;
+    }
+
+    .hero__sub {
+      font-size: 1rem;
+      color: var(--text-secondary);
+      max-width: 460px;
+      line-height: 1.75;
+      margin-bottom: 2.5rem;
+    }
+
+    .hero__actions {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    /* 滚动提示 */
+    .hero__scroll {
+      position: absolute;
+      bottom: 2rem;
+      left: 2rem;
+      font-family: var(--font-display);
+      font-size: 0.72rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .hero__scroll::after {
+      content: '';
+      display: block;
+      width: 1px; height: 40px;
+      background: var(--bg-border);
+    }
+
+    /* ── 数据亮点区（3个大数字） ── */
+    .stats {
+      border-top: 1px solid var(--bg-border);
+      border-bottom: 1px solid var(--bg-border);
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+    }
+    .stat-item {
+      padding: 2.5rem 2rem;
+      border-right: 1px solid var(--bg-border);
+      text-align: center;
+    }
+    .stat-item:last-child { border-right: none; }
+    .stat-num {
+      font-family: var(--font-display);
+      font-size: clamp(2.5rem, 5vw, 4rem);
+      font-weight: 800;
+      color: var(--accent);
+      line-height: 1;
+      margin-bottom: 0.4rem;
+      letter-spacing: -0.02em;
+    }
+    .stat-label {
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+      letter-spacing: 0.04em;
+    }
+
+    /* ── 三步说明 ── */
+    .how {
+      padding: 5rem 2rem;
+    }
+    .how__header {
+      margin-bottom: 3rem;
+    }
+    .section-eyebrow {
+      font-family: var(--font-display);
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.75rem;
+    }
+    .section-title {
+      font-family: var(--font-display);
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 800;
+      text-transform: uppercase;
+      line-height: 1;
+      color: var(--text-primary);
+    }
+
+    .how__grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1px;
+      background: var(--bg-border);
+      border: 1px solid var(--bg-border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+    .how-step {
+      background: var(--bg-raised);
+      padding: 2rem 1.75rem;
+      position: relative;
+    }
+    .how-step__num {
+      font-family: var(--font-display);
+      font-size: 4.5rem;
+      font-weight: 800;
+      color: var(--bg-hover);
+      line-height: 1;
+      margin-bottom: 1rem;
+      -webkit-text-stroke: 1px var(--bg-border);
+      color: transparent;
+    }
+    .how-step h3 {
+      font-family: var(--font-display);
+      font-size: 1.2rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 0.6rem;
+      color: var(--text-primary);
+    }
+    .how-step p {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      line-height: 1.7;
+    }
+
+    /* ── 公益声明横幅 ── */
+    .trust {
+      background: var(--accent-dim);
+      border-top: 1px solid rgba(181,255,71,0.15);
+      border-bottom: 1px solid rgba(181,255,71,0.15);
+      padding: 2rem;
+    }
+    .trust__inner {
+      max-width: 960px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .trust__text {
+      font-family: var(--font-display);
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--accent);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .trust__pills {
+      display: flex;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+    }
+    .trust__pill {
+      font-family: var(--font-display);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--accent);
+      border: 1px solid rgba(181,255,71,0.3);
+      padding: 0.3rem 0.75rem;
+      border-radius: var(--radius);
+    }
+
+    /* ── 动作库预览 ── */
+    .preview {
+      padding: 5rem 2rem;
+    }
+    .preview__grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 1px;
+      background: var(--bg-border);
+      border: 1px solid var(--bg-border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      margin: 2.5rem 0;
+    }
+    .ex-preview {
+      background: var(--bg-raised);
+      padding: 1.75rem;
+      transition: background var(--speed);
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+      display: block;
+    }
+    .ex-preview:hover { background: var(--bg-hover); }
+    .ex-preview:hover .ex-preview__arrow { color: var(--accent); transform: translateX(4px); }
+    .ex-preview__icon { font-size: 2rem; margin-bottom: 0.75rem; }
+    .ex-preview h4 {
+      font-family: var(--font-display);
+      font-size: 1rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 0.25rem;
+    }
+    .ex-preview p { font-size: 0.8rem; color: var(--text-secondary); }
+    .ex-preview__arrow {
+      display: inline-block;
+      margin-top: 0.75rem;
+      font-size: 1rem;
+      color: var(--text-dim);
+      transition: all var(--speed);
+    }
+
+    @media (max-width: 640px) {
+      .stats { grid-template-columns: 1fr; }
+      .stat-item { border-right: none; border-bottom: 1px solid var(--bg-border); }
+      .stat-item:last-child { border-bottom: none; }
+      .trust__inner { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+  <div id="nav"></div>
+
+  <!-- ══════════ 英雄区 ══════════ -->
+  <section class="hero">
+    <div class="hero__glow"></div>
+    <div class="hero__bg-num" aria-hidden="true">01</div>
+
+    <div class="hero__content">
+      <p class="hero__label fade-up">女性健身 · 公益指南</p>
+
+      <h1 class="hero__title">
+        <span class="line1 fade-up delay-1">今天</span>
+        <span class="line2 fade-up delay-2">怎么练</span>
+        <span class="line3 fade-up delay-3">直接做</span>
+      </h1>
+
+      <p class="hero__sub fade-up delay-3">
+        根据你的月经周期和今天的身体状态，给你一套可以直接执行的训练和饮食方案。两分钟填完，马上开始。
+      </p>
+
+      <div class="hero__actions fade-up delay-4">
+        <a href="pages/today.html" class="btn btn--primary btn--lg">生成今日计划 →</a>
+        <a href="pages/library.html" class="btn btn--outline btn--lg">动作库</a>
+      </div>
+    </div>
+
+    <p class="hero__scroll" aria-hidden="true">向下滚动</p>
+  </section>
+
+  <!-- ══════════ 数据亮点 ══════════ -->
+  <div class="stats">
+    <div class="stat-item">
+      <div class="stat-num">4</div>
+      <div class="stat-label">周期阶段专属方案</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">30+</div>
+      <div class="stat-label">图文动作详解</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">2min</div>
+      <div class="stat-label">填完体感拿到计划</div>
+    </div>
+  </div>
+
+  <!-- ══════════ 三步说明 ══════════ -->
+  <section class="how">
+    <div class="container">
+      <div class="how__header">
+        <p class="section-eyebrow">怎么用</p>
+        <h2 class="section-title">三步<br>拿到方案</h2>
+      </div>
+      <div class="how__grid">
+        <div class="how-step">
+          <div class="how-step__num">01</div>
+          <h3>回答体感问题</h3>
+          <p>能量感、睡眠、有没有不适——4个单选题，感觉好回答。</p>
+        </div>
+        <div class="how-step">
+          <div class="how-step__num">02</div>
+          <h3>系统匹配推荐</h3>
+          <p>根据你的周期阶段 + 今日体感，自动匹配训练强度和饮食建议。</p>
+        </div>
+        <div class="how-step">
+          <div class="how-step__num">03</div>
+          <h3>照做，记录感受</h3>
+          <p>跟着动作说明练，完成后记录，数据帮你越来越了解自己。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════ 公益声明 ══════════ -->
+  <div class="trust">
+    <div class="trust__inner">
+      <p class="trust__text">纯公益工具</p>
+      <div class="trust__pills">
+        <span class="trust__pill">无广告</span>
+        <span class="trust__pill">不售卖</span>
+        <span class="trust__pill">不导流</span>
+        <span class="trust__pill">数据不外传</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════ 动作库预览 ══════════ -->
+  <section class="preview">
+    <div class="container">
+      <div style="display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:1rem;margin-bottom:0">
+        <div>
+          <p class="section-eyebrow">动作库</p>
+          <h2 class="section-title">先认识<br>几个动作</h2>
+        </div>
+        <a href="pages/library.html" class="btn btn--outline">查看全部 →</a>
+      </div>
+
+      <div class="preview__grid">
+        <a href="pages/library.html#glute-bridge" class="ex-preview">
+          <div class="ex-preview__icon">🍑</div>
+          <h4>臀桥</h4>
+          <p>臀大肌 · 新手 · 经期适用</p>
+          <span class="ex-preview__arrow">→</span>
+        </a>
+        <a href="pages/library.html#side-clam" class="ex-preview">
+          <div class="ex-preview__icon">🦀</div>
+          <h4>蚌式开合</h4>
+          <p>臀中肌 · 新手 · 经期适用</p>
+          <span class="ex-preview__arrow">→</span>
+        </a>
+        <a href="pages/library.html#squat" class="ex-preview">
+          <div class="ex-preview__icon">🏋️</div>
+          <h4>徒手深蹲</h4>
+          <p>全腿 · 新手友好</p>
+          <span class="ex-preview__arrow">→</span>
+        </a>
+        <a href="pages/library.html#plank" class="ex-preview">
+          <div class="ex-preview__icon">⬛</div>
+          <h4>平板支撑</h4>
+          <p>核心 · 新手</p>
+          <span class="ex-preview__arrow">→</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════ 页脚 ══════════ -->
+  <footer class="footer">
+    <p>
+      Body Notes · 女性健身公益指南<br>
+      <a href="pages/disclaimer.html">免责声明</a> ·
+      <a href="pages/about.html">关于本站</a><br>
+      本网站内容仅供参考，不构成医疗建议
+    </p>
+  </footer>
+
+  <script src="js/app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const user = getCurrentUser();
+      if (user) {
+        const cta = document.querySelector('.hero__actions .btn--primary');
+        if (cta) { cta.textContent = '今天练什么？→'; }
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>登录 · Body Notes</title>
+  <link rel="stylesheet" href="../css/style.css" />
+  <style>
+    .auth-wrap {
+      min-height: calc(100vh - 60px);
+      display: grid;
+      /* 左侧装饰 + 右侧表单 */
+      grid-template-columns: 1fr 1fr;
+    }
+
+    /* 左侧装饰区 */
+    .auth-deco {
+      background: var(--bg-raised);
+      border-right: 1px solid var(--bg-border);
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 3rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .auth-deco__big {
+      position: absolute;
+      top: -0.1em;
+      left: -0.05em;
+      font-family: var(--font-display);
+      font-size: 18rem;
+      font-weight: 800;
+      font-style: italic;
+      color: transparent;
+      -webkit-text-stroke: 1px var(--bg-border);
+      line-height: 0.85;
+      user-select: none;
+      pointer-events: none;
+    }
+    .auth-deco__text {
+      position: relative;
+      z-index: 1;
+    }
+    .auth-deco__text h2 {
+      font-family: var(--font-display);
+      font-size: 2.5rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      line-height: 1;
+      margin-bottom: 1rem;
+    }
+    .auth-deco__text h2 span { color: var(--accent); font-style: italic; }
+    .auth-deco__text p {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      line-height: 1.7;
+      max-width: 300px;
+    }
+
+    /* 右侧表单区 */
+    .auth-form-area {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem 2.5rem;
+    }
+    .auth-box {
+      width: 100%;
+      max-width: 380px;
+    }
+
+    /* Tab 切换 */
+    .auth-tabs {
+      display: flex;
+      gap: 0;
+      border-bottom: 1px solid var(--bg-border);
+      margin-bottom: 2rem;
+    }
+    .auth-tab {
+      flex: 1;
+      padding: 0.75rem 0;
+      text-align: center;
+      font-family: var(--font-display);
+      font-size: 0.88rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      cursor: pointer;
+      background: none;
+      border: none;
+      color: var(--text-dim);
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      transition: all var(--speed);
+    }
+    .auth-tab.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+
+    .auth-panel { display: none; }
+    .auth-panel.active { display: block; animation: fadeUp 0.3s var(--ease); }
+
+    /* 密码显示切换 */
+    .input-wrap { position: relative; }
+    .input-wrap .form-input { padding-right: 2.75rem; }
+    .toggle-pw {
+      position: absolute;
+      right: 0.85rem;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--text-dim);
+      font-size: 1rem;
+      padding: 4px;
+      transition: color var(--speed);
+    }
+    .toggle-pw:hover { color: var(--text-secondary); }
+
+    /* 错误提示 */
+    .err-msg {
+      font-size: 0.82rem;
+      color: var(--alert);
+      margin-top: 0.4rem;
+      display: none;
+    }
+    .err-msg.show { display: block; animation: fadeUp 0.2s var(--ease); }
+
+    /* 同意条款 */
+    .agree-row {
+      display: flex;
+      gap: 0.6rem;
+      align-items: flex-start;
+      margin-bottom: 1.25rem;
+    }
+    .agree-row input[type="checkbox"] {
+      margin-top: 3px;
+      accent-color: var(--accent);
+      flex-shrink: 0;
+      width: 15px; height: 15px;
+    }
+    .agree-row label {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      line-height: 1.55;
+    }
+    .agree-row a { color: var(--accent); }
+
+    .auth-switch {
+      text-align: center;
+      margin-top: 1.25rem;
+      font-size: 0.82rem;
+      color: var(--text-dim);
+    }
+    .auth-switch a { color: var(--accent); }
+
+    /* 手机端：隐藏装饰区 */
+    @media (max-width: 680px) {
+      .auth-wrap { grid-template-columns: 1fr; }
+      .auth-deco  { display: none; }
+      .auth-form-area { padding: 2rem 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+  <div id="nav"></div>
+
+  <div class="auth-wrap">
+    <!-- 左侧装饰 -->
+    <div class="auth-deco">
+      <div class="auth-deco__big" aria-hidden="true">BN</div>
+      <div class="auth-deco__text">
+        <h2>身体<br>是你的<br><span>主场</span></h2>
+        <p>登录后可以保存周期信息、体感历史和训练计划记录。</p>
+      </div>
+    </div>
+
+    <!-- 右侧表单 -->
+    <div class="auth-form-area">
+      <div class="auth-box">
+        <div class="auth-tabs">
+          <button class="auth-tab active" id="tabLogin"    onclick="switchTab('login')">登录</button>
+          <button class="auth-tab"        id="tabRegister" onclick="switchTab('register')">注册</button>
+        </div>
+
+        <!-- 登录 -->
+        <div class="auth-panel active" id="panelLogin">
+          <div class="form-group">
+            <label class="form-label">邮箱</label>
+            <input type="email" id="lEmail" class="form-input" placeholder="your@email.com" autocomplete="email" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">密码</label>
+            <div class="input-wrap">
+              <input type="password" id="lPw" class="form-input" placeholder="输入密码" autocomplete="current-password" />
+              <button class="toggle-pw" type="button" onclick="togglePw('lPw',this)">👁</button>
+            </div>
+            <p class="err-msg" id="lErr">邮箱或密码有误，请重试</p>
+          </div>
+          <button class="btn btn--primary btn--block" onclick="handleLogin()">登录</button>
+          <p class="auth-switch">没有账号？<a href="#" onclick="switchTab('register');return false">立即注册</a></p>
+        </div>
+
+        <!-- 注册 -->
+        <div class="auth-panel" id="panelRegister">
+          <div class="form-group">
+            <label class="form-label">邮箱</label>
+            <input type="email" id="rEmail" class="form-input" placeholder="your@email.com" autocomplete="email" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">密码 <span style="color:var(--text-dim);font-size:0.75rem;text-transform:none;letter-spacing:0">（至少8位）</span></label>
+            <div class="input-wrap">
+              <input type="password" id="rPw" class="form-input" placeholder="字母 + 数字，至少8位" autocomplete="new-password" />
+              <button class="toggle-pw" type="button" onclick="togglePw('rPw',this)">👁</button>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">确认密码</label>
+            <input type="password" id="rPw2" class="form-input" placeholder="再输入一次" autocomplete="new-password" />
+            <p class="err-msg" id="rErr">请检查输入</p>
+          </div>
+
+          <div class="agree-row">
+            <input type="checkbox" id="agreeChk" />
+            <label for="agreeChk">
+              我已阅读并同意 <a href="disclaimer.html" target="_blank">《免责声明》</a>，
+              了解本站内容不构成医疗建议
+            </label>
+          </div>
+
+          <button class="btn btn--primary btn--block" onclick="handleRegister()">创建账号</button>
+          <p class="auth-switch">已有账号？<a href="#" onclick="switchTab('login');return false">直接登录</a></p>
+        </div>
+
+      </div><!-- /auth-box -->
+    </div><!-- /auth-form-area -->
+  </div><!-- /auth-wrap -->
+
+  <script src="../js/app.js"></script>
+  <script>
+    // 已登录 → 跳走
+    document.addEventListener('DOMContentLoaded', () => {
+      if (getCurrentUser()) {
+        const p = new URLSearchParams(location.search);
+        location.href = p.get('redirect') || '../pages/today.html';
+      }
+    });
+
+    function switchTab(t) {
+      ['Login','Register'].forEach(n => {
+        document.getElementById('tab'+n).classList.toggle('active', n.toLowerCase() === t);
+        document.getElementById('panel'+n).classList.toggle('active', n.toLowerCase() === t);
+      });
+    }
+
+    function togglePw(id, btn) {
+      const el = document.getElementById(id);
+      const hidden = el.type === 'password';
+      el.type = hidden ? 'text' : 'password';
+      btn.textContent = hidden ? '🙈' : '👁';
+    }
+
+    function handleLogin() {
+      const email = document.getElementById('lEmail').value.trim();
+      const pw    = document.getElementById('lPw').value;
+      if (!email || !pw) { showErr('lErr','请填写邮箱和密码'); return; }
+
+      /* ── TODO：替换为 Firebase Auth ──
+         firebase.auth().signInWithEmailAndPassword(email, pw)
+           .then(() => redirect())
+           .catch(e => showErr('lErr', e.message));
+      */
+      loginUser(email);
+      redirect();
+    }
+
+    function handleRegister() {
+      const email  = document.getElementById('rEmail').value.trim();
+      const pw     = document.getElementById('rPw').value;
+      const pw2    = document.getElementById('rPw2').value;
+      const agreed = document.getElementById('agreeChk').checked;
+
+      if (!email)        { showErr('rErr','请填写邮箱'); return; }
+      if (pw.length < 8) { showErr('rErr','密码至少需要8位'); return; }
+      if (pw !== pw2)    { showErr('rErr','两次密码不一致'); return; }
+      if (!agreed)       { showErr('rErr','请先同意免责声明'); return; }
+
+      /* ── TODO：替换为 Firebase Auth ──
+         firebase.auth().createUserWithEmailAndPassword(email, pw)
+           .then(() => location.href = '../pages/onboarding.html')
+           .catch(e => showErr('rErr', e.message));
+      */
+      loginUser(email);
+      location.href = '../pages/onboarding.html';
+    }
+
+    function redirect() {
+      const p = new URLSearchParams(location.search);
+      location.href = p.get('redirect') || '../pages/today.html';
+    }
+
+    function showErr(id, msg) {
+      const el = document.getElementById(id);
+      el.textContent = msg;
+      el.classList.add('show');
+      setTimeout(() => el.classList.remove('show'), 4000);
+    }
+  </script>
+</body>
+</html>

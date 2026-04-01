@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>免责声明 · Body Notes</title>
+  <link rel="stylesheet" href="../css/style.css" />
+  <style>
+    .disc-page { padding: 3rem 1.5rem 5rem; }
+    .disc-card {
+      max-width: 680px; margin: 0 auto;
+      background: var(--bg-raised);
+      border: 1px solid var(--bg-border);
+      border-radius: var(--radius-lg);
+      padding: 2.5rem;
+    }
+    .disc-card h1 {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      margin-bottom: 0.3rem;
+    }
+    .disc-card .updated { font-size: 0.75rem; color: var(--text-dim); margin-bottom: 2rem; }
+    .disc-section { margin-bottom: 2rem; }
+    .disc-section h2 {
+      font-family: var(--font-display);
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.75rem;
+    }
+    .disc-section p, .disc-section li {
+      font-size: 0.9rem;
+      line-height: 1.8;
+      color: var(--text-primary);
+    }
+    .disc-section ul { margin-left: 1rem; }
+    .disc-section li { list-style: disc; margin-bottom: 0.35rem; }
+    .disc-section .red-list li { color: var(--alert); }
+    .disc-note {
+      font-size: 0.88rem;
+      color: var(--alert);
+      font-weight: 500;
+      margin-top: 0.75rem;
+    }
+
+    /* 确认区 */
+    .confirm-box {
+      background: var(--bg-hover);
+      border: 1px solid var(--bg-border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      margin-top: 2rem;
+    }
+    .confirm-box h2 {
+      font-family: var(--font-display);
+      font-size: 0.88rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 1.25rem;
+      color: var(--text-primary);
+    }
+    .ck-row {
+      display: flex;
+      gap: 0.65rem;
+      align-items: flex-start;
+      margin-bottom: 0.85rem;
+    }
+    .ck-row input[type="checkbox"] {
+      accent-color: var(--accent);
+      margin-top: 3px;
+      flex-shrink: 0;
+      width: 15px; height: 15px;
+    }
+    .ck-row label { font-size: 0.875rem; color: var(--text-secondary); line-height: 1.55; }
+    .ck-row a { color: var(--accent); }
+  </style>
+</head>
+<body>
+  <div id="nav"></div>
+  <main class="disc-page">
+    <div class="disc-card">
+      <h1>免责声明</h1>
+      <p class="updated">Body Notes · 最后更新 2025年</p>
+
+      <div class="disc-section">
+        <h2>本站性质</h2>
+        <p>本网站（Body Notes）为<strong>纯公益健康指导工具</strong>，不收费、不售课程、不投放广告、不为任何商业服务导流。</p>
+        <p class="disc-note">⚠️ 本站内容不构成医疗诊断、治疗方案或任何处方建议。</p>
+      </div>
+
+      <div class="disc-section">
+        <h2>使用前须知</h2>
+        <ul>
+          <li>运动效果因个体差异而不同，本站不对任何训练结果作出保证</li>
+          <li>如有已知健康问题，请在开始前咨询医生</li>
+          <li>运动中如出现不适，应立即停止并视情况就医</li>
+          <li>本站信息不替代医生、物理治疗师或注册营养师的专业意见</li>
+        </ul>
+      </div>
+
+      <div class="disc-section">
+        <h2>以下情况请先咨询医生</h2>
+        <ul class="red-list">
+          <li>怀孕期（任何阶段）或产后6周内</li>
+          <li>骨质疏松、骨折风险高</li>
+          <li>心脏病、高血压、糖尿病或其他慢性病</li>
+          <li>近期手术、重大创伤或康复期</li>
+          <li>关节置换术后</li>
+          <li>进食障碍或正在接受相关治疗</li>
+        </ul>
+      </div>
+
+      <div class="disc-section">
+        <h2>运动安全提示</h2>
+        <ul>
+          <li>感到疼痛（区别于正常肌肉酸感）时立即停止该动作</li>
+          <li>新手从低强度开始，先学好动作模式再加重量</li>
+          <li>经期腹部痉挛剧烈时可只散步或完全休息</li>
+          <li>身体极度疲劳或生病时，休息比训练更重要</li>
+        </ul>
+      </div>
+
+      <div class="disc-section">
+        <h2>你的数据</h2>
+        <ul>
+          <li>周期和体感数据仅用于在本站生成个人推荐</li>
+          <li>不对外出售或共享，不用于商业目的</li>
+          <li>你可以随时在个人中心删除全部数据</li>
+          <li>数据目前存在你的设备浏览器本地</li>
+        </ul>
+      </div>
+
+      <div class="confirm-box">
+        <h2>确认后进入网站</h2>
+        <div class="ck-row"><input type="checkbox" id="c1"><label for="c1">我理解本站提供运动参考，不替代医疗建议</label></div>
+        <div class="ck-row"><input type="checkbox" id="c2"><label for="c2">如我怀孕或有慢性病，我会先咨询医生</label></div>
+        <div class="ck-row"><input type="checkbox" id="c3"><label for="c3">运动中出现剧烈不适，我会立即停止</label></div>
+        <button class="btn btn--primary btn--block" style="margin-top:1rem" onclick="confirm_()">已了解，进入网站 →</button>
+      </div>
+    </div>
+  </main>
+
+  <script src="../js/app.js"></script>
+  <script>
+    function confirm_() {
+      if (!document.getElementById('c1').checked ||
+          !document.getElementById('c2').checked ||
+          !document.getElementById('c3').checked) {
+        alert('请勾选全部三项后继续'); return;
+      }
+      localStorage.setItem('bn_disclaimer','1');
+      const p = new URLSearchParams(location.search);
+      location.href = p.get('next') || '../index.html';
+    }
+  </script>
+</body>
+</html>

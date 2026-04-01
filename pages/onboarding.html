@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>初始设置 · Body Notes</title>
+  <link rel="stylesheet" href="../css/style.css" />
+  <style>
+    .ob-page {
+      min-height: calc(100vh - 60px);
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 3rem 1.5rem 5rem;
+    }
+    .ob-wrap { width: 100%; max-width: 560px; }
+
+    /* 顶部进度 */
+    .ob-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 3rem;
+    }
+    .ob-step-info {
+      font-family: var(--font-display);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+    }
+    .ob-dots {
+      display: flex;
+      gap: 6px;
+    }
+    .ob-dot {
+      width: 28px; height: 3px;
+      border-radius: var(--radius-pill);
+      background: var(--bg-border);
+      transition: background 0.3s var(--ease);
+    }
+    .ob-dot.done   { background: var(--accent); }
+    .ob-dot.active { background: rgba(181,255,71,0.5); }
+
+    /* 面板 */
+    .ob-panel { display: none; }
+    .ob-panel.active { display: block; animation: fadeUp 0.35s var(--ease); }
+
+    .ob-panel__eyebrow {
+      font-family: var(--font-display);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.6rem;
+    }
+    .ob-panel h2 {
+      font-family: var(--font-display);
+      font-size: clamp(1.8rem, 5vw, 2.5rem);
+      font-weight: 800;
+      text-transform: uppercase;
+      line-height: 0.95;
+      margin-bottom: 0.75rem;
+    }
+    .ob-hint {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      margin-bottom: 2rem;
+      line-height: 1.7;
+    }
+
+    /* 选项区 */
+    .opts { display: flex; flex-direction: column; gap: 0.6rem; margin-bottom: 2rem; }
+    .opts--2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.6rem;
+      margin-bottom: 2rem;
+    }
+
+    /* 底部操作 */
+    .ob-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 2rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--bg-border);
+    }
+    .ob-back {
+      font-family: var(--font-display);
+      font-size: 0.82rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0.5rem;
+      transition: color var(--speed);
+    }
+    .ob-back:hover { color: var(--text-primary); }
+
+    /* 日期 input */
+    input[type="date"] {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      background: var(--bg-hover);
+      border: 1px solid var(--bg-border);
+      border-radius: var(--radius);
+      color: var(--text-primary);
+      font-family: var(--font-body);
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color var(--speed);
+    }
+    input[type="date"]:focus { border-color: var(--accent); }
+    input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1) opacity(0.4); }
+
+    /* 怀孕警示 */
+    #pregnantWarn { display: none; margin-top: 0.75rem; }
+  </style>
+</head>
+<body>
+  <div id="nav"></div>
+
+  <main class="ob-page">
+    <div class="ob-wrap">
+
+      <!-- 顶部进度 -->
+      <div class="ob-top">
+        <span class="ob-step-info" id="obStepLabel">Step 01 / 03</span>
+        <div class="ob-dots">
+          <div class="ob-dot active" id="dot1"></div>
+          <div class="ob-dot"        id="dot2"></div>
+          <div class="ob-dot"        id="dot3"></div>
+        </div>
+      </div>
+
+      <!-- ══ Step 1：目标 ══ -->
+      <div class="ob-panel active" id="obStep1">
+        <p class="ob-panel__eyebrow">你的目标</p>
+        <h2>现在最想<br>达到什么？</h2>
+        <p class="ob-hint">选一个最符合当下的，以后可以在个人中心随时修改。</p>
+
+        <div class="opts">
+          <button class="option-card" data-key="goal" data-val="gain_muscle" onclick="pick(this)">
+            <span class="option-emoji">🔥</span>
+            <div><strong>增肌塑形</strong><br><small style="color:var(--text-secondary)">让身体更有型、更紧实</small></div>
+          </button>
+          <button class="option-card" data-key="goal" data-val="maintain" onclick="pick(this)">
+            <span class="option-emoji">⚖️</span>
+            <div><strong>维持状态</strong><br><small style="color:var(--text-secondary)">保持健康活力就好</small></div>
+          </button>
+          <button class="option-card" data-key="goal" data-val="energy" onclick="pick(this)">
+            <span class="option-emoji">🌿</span>
+            <div><strong>改善精力</strong><br><small style="color:var(--text-secondary)">减少疲劳、提升体力</small></div>
+          </button>
+          <button class="option-card" data-key="goal" data-val="cycle_health" onclick="pick(this)">
+            <span class="option-emoji">🧘</span>
+            <div><strong>改善周期不适</strong><br><small style="color:var(--text-secondary)">经期或围绝经期更舒适</small></div>
+          </button>
+        </div>
+
+        <div class="ob-footer">
+          <span></span>
+          <button class="btn btn--primary" onclick="goStep(1,2)">下一步 →</button>
+        </div>
+      </div>
+
+      <!-- ══ Step 2：周期 ══ -->
+      <div class="ob-panel" id="obStep2">
+        <p class="ob-panel__eyebrow">你的周期</p>
+        <h2>月经周期<br>情况如何？</h2>
+        <p class="ob-hint">帮我们在对的时间推荐对的强度。不想填可以选「不提供」。</p>
+
+        <div class="opts" id="cycleStatusOpts">
+          <button class="option-card" data-key="cycleStatus" data-val="regular"   onclick="pick(this);showCycleFields('regular')">
+            <span class="option-emoji">📅</span> 规律来潮（每月）
+          </button>
+          <button class="option-card" data-key="cycleStatus" data-val="irregular" onclick="pick(this);showCycleFields('regular')">
+            <span class="option-emoji">〰️</span> 不规律
+          </button>
+          <button class="option-card" data-key="cycleStatus" data-val="menopause" onclick="pick(this);showCycleFields('none')">
+            <span class="option-emoji">🌸</span> 已停经 / 围绝经期
+          </button>
+          <button class="option-card" data-key="cycleStatus" data-val="pregnant"  onclick="pick(this);showCycleFields('pregnant')">
+            <span class="option-emoji">🤱</span> 怀孕中 / 备孕中
+          </button>
+          <button class="option-card" data-key="cycleStatus" data-val="no_share"  onclick="pick(this);showCycleFields('none')">
+            <span class="option-emoji">🔒</span> 不提供这项信息
+          </button>
+        </div>
+
+        <!-- 规律/不规律时显示 -->
+        <div id="cycleExtra" style="display:none">
+          <div class="form-group">
+            <label class="form-label">上次月经开始日期（大概就好）</label>
+            <input type="date" id="lastPeriod" />
+          </div>
+          <div class="form-group" style="margin-bottom:0">
+            <label class="form-label">平均周期长度</label>
+          </div>
+          <div class="opts--2" style="margin-top:0.5rem">
+            <button class="option-card" data-key="cycleLen" data-val="short"       onclick="pick(this)"><span class="option-emoji">📏</span> 25天以下</button>
+            <button class="option-card" data-key="cycleLen" data-val="normal"      onclick="pick(this)"><span class="option-emoji">📐</span> 26–30天</button>
+            <button class="option-card" data-key="cycleLen" data-val="long"        onclick="pick(this)"><span class="option-emoji">📏</span> 31–35天</button>
+            <button class="option-card" data-key="cycleLen" data-val="unknown_len" onclick="pick(this)"><span class="option-emoji">❓</span> 不确定</button>
+          </div>
+        </div>
+
+        <!-- 怀孕警示 -->
+        <div class="alert alert--red" id="pregnantWarn">
+          ⚠️ 怀孕期间运动前请先咨询妇产科医生。本站不生成高强度计划，仅提供温和活动参考。
+        </div>
+
+        <div class="ob-footer">
+          <button class="ob-back" onclick="goStep(2,1)">← 返回</button>
+          <button class="btn btn--primary" onclick="goStep(2,3)">下一步 →</button>
+        </div>
+      </div>
+
+      <!-- ══ Step 3：生活安排 ══ -->
+      <div class="ob-panel" id="obStep3">
+        <p class="ob-panel__eyebrow">你的安排</p>
+        <h2>日常怎么<br>练、在哪练？</h2>
+        <p class="ob-hint">帮我们定制适合你时间和场地的计划。</p>
+
+        <p style="font-family:var(--font-display);font-size:0.75rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-secondary);margin-bottom:0.6rem">每天可用运动时间</p>
+        <div class="opts--2" style="margin-bottom:1.5rem">
+          <button class="option-card" data-key="time" data-val="15"  onclick="pick(this)"><span class="option-emoji">⏱</span> 15分钟内</button>
+          <button class="option-card" data-key="time" data-val="30"  onclick="pick(this)"><span class="option-emoji">⏱</span> 15–30分钟</button>
+          <button class="option-card" data-key="time" data-val="45"  onclick="pick(this)"><span class="option-emoji">⏱</span> 30–45分钟</button>
+          <button class="option-card" data-key="time" data-val="60"  onclick="pick(this)"><span class="option-emoji">⏱</span> 45分钟以上</button>
+        </div>
+
+        <p style="font-family:var(--font-display);font-size:0.75rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-secondary);margin-bottom:0.6rem">训练经验</p>
+        <div class="opts" style="margin-bottom:1.5rem">
+          <button class="option-card" data-key="exp" data-val="beginner"  onclick="pick(this)"><span class="option-emoji">🌱</span> 完全没有，从零开始</button>
+          <button class="option-card" data-key="exp" data-val="casual"    onclick="pick(this)"><span class="option-emoji">🚶</span> 偶尔运动，不系统</button>
+          <button class="option-card" data-key="exp" data-val="returning" onclick="pick(this)"><span class="option-emoji">🔄</span> 曾经有过，目前中断</button>
+          <button class="option-card" data-key="exp" data-val="regular"   onclick="pick(this)"><span class="option-emoji">💪</span> 目前有规律训练习惯</button>
+        </div>
+
+        <p style="font-family:var(--font-display);font-size:0.75rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-secondary);margin-bottom:0.6rem">运动场所（可多选）</p>
+        <div class="opts--2" style="margin-bottom:0">
+          <button class="option-card" data-key="equip" data-val="home_no" onclick="multiPick(this)"><span class="option-emoji">🏠</span> 家里（无器械）</button>
+          <button class="option-card" data-key="equip" data-val="home_eq" onclick="multiPick(this)"><span class="option-emoji">🏋️</span> 家里（有哑铃/弹力带）</button>
+          <button class="option-card" data-key="equip" data-val="gym"     onclick="multiPick(this)"><span class="option-emoji">🏢</span> 健身房</button>
+          <button class="option-card" data-key="equip" data-val="outdoor" onclick="multiPick(this)"><span class="option-emoji">🌳</span> 户外</button>
+        </div>
+
+        <div class="ob-footer">
+          <button class="ob-back" onclick="goStep(3,2)">← 返回</button>
+          <button class="btn btn--primary" onclick="finish()">完成，进入今日计划 →</button>
+        </div>
+      </div>
+
+    </div><!-- /ob-wrap -->
+  </main>
+
+  <script src="../js/app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => { requireAuth(); });
+
+    // 答案存储
+    const A = { goal: null, cycleStatus: null, cycleLen: null, time: null, exp: null, equip: [] };
+    let curStep = 1;
+
+    // 单选
+    function pick(btn) {
+      const key = btn.dataset.key;
+      // 找同组选项
+      btn.closest('.opts, .opts--2').querySelectorAll(`.option-card[data-key="${key}"]`)
+        .forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      A[key] = btn.dataset.val;
+    }
+
+    // 多选（场地）
+    function multiPick(btn) {
+      btn.classList.toggle('selected');
+      const v = btn.dataset.val;
+      A.equip = btn.classList.contains('selected')
+        ? [...new Set([...A.equip, v])]
+        : A.equip.filter(x => x !== v);
+    }
+
+    // 显示/隐藏周期额外字段
+    function showCycleFields(mode) {
+      document.getElementById('cycleExtra').style.display    = mode === 'regular' ? 'block' : 'none';
+      document.getElementById('pregnantWarn').style.display  = mode === 'pregnant' ? 'block' : 'none';
+    }
+
+    // 步骤切换
+    function goStep(from, to) {
+      if (to > from) {
+        if (from === 1 && !A.goal)        { alert('请先选择一个目标'); return; }
+        if (from === 2 && !A.cycleStatus) { alert('请先选择周期状态'); return; }
+      }
+      document.getElementById(`obStep${from}`).classList.remove('active');
+      document.getElementById(`obStep${to}`).classList.add('active');
+      curStep = to;
+      updateDots();
+    }
+
+    function updateDots() {
+      for (let i = 1; i <= 3; i++) {
+        const d = document.getElementById(`dot${i}`);
+        d.className = 'ob-dot' + (i < curStep ? ' done' : i === curStep ? ' active' : '');
+      }
+      document.getElementById('obStepLabel').textContent =
+        `Step 0${curStep} / 03`;
+    }
+
+    // 完成 onboarding
+    function finish() {
+      if (!A.time)           { alert('请选择可用运动时间'); return; }
+      if (!A.exp)            { alert('请选择训练经验'); return; }
+      if (!A.equip.length)   { alert('请选择至少一个运动场所'); return; }
+      A.lastPeriodDate = document.getElementById('lastPeriod').value || null;
+      saveOnboarding(A);
+      location.href = 'today.html';
+    }
+  </script>
+</body>
+</html>

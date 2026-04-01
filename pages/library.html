@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>动作库 · Body Notes</title>
+  <link rel="stylesheet" href="../css/style.css" />
+  <style>
+    .lib-page { padding: 2.5rem 1.5rem 5rem; }
+
+    /* 页头 */
+    .lib-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .lib-header h1 {
+      font-family: var(--font-display);
+      font-size: clamp(2rem, 5vw, 3rem);
+      font-weight: 800;
+      text-transform: uppercase;
+      line-height: 0.95;
+    }
+    .lib-header p { font-size: 0.85rem; color: var(--text-secondary); }
+
+    /* 筛选栏 */
+    .filter-bar {
+      display: flex;
+      gap: 0.45rem;
+      flex-wrap: wrap;
+      margin-bottom: 2rem;
+    }
+    .fb {
+      padding: 0.38rem 0.9rem;
+      border-radius: var(--radius);
+      border: 1px solid var(--bg-border);
+      background: var(--bg-raised);
+      cursor: pointer;
+      font-family: var(--font-display);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+      transition: all var(--speed);
+    }
+    .fb:hover  { border-color: var(--accent); color: var(--accent); }
+    .fb.active { background: var(--accent); color: #0d0d0f; border-color: var(--accent); }
+
+    /* 动作网格 */
+    .lib-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 1px;
+      background: var(--bg-border);
+      border: 1px solid var(--bg-border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+    .ex-card {
+      background: var(--bg-raised);
+      padding: 1.5rem;
+      cursor: pointer;
+      transition: background var(--speed);
+    }
+    .ex-card:hover { background: var(--bg-hover); }
+    .ex-card:hover .ex-card__arr { color: var(--accent); }
+    .ex-card__icon { font-size: 2rem; margin-bottom: 0.75rem; }
+    .ex-card__name {
+      font-family: var(--font-display);
+      font-size: 1rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 0.2rem;
+    }
+    .ex-card__name-en { font-size: 0.72rem; color: var(--text-dim); margin-bottom: 0.6rem; }
+    .ex-card__meta { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+    .ex-card__arr {
+      float: right;
+      color: var(--text-dim);
+      font-size: 1rem;
+      margin-top: -1.5rem;
+      transition: color var(--speed);
+    }
+
+    /* 空状态 */
+    .lib-empty {
+      grid-column: 1 / -1;
+      padding: 3rem;
+      text-align: center;
+      color: var(--text-dim);
+      font-size: 0.875rem;
+    }
+
+    /* ── 详情 Modal ── */
+    .modal-bg {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.75);
+      z-index: 300;
+      display: none;
+      align-items: flex-end;
+      justify-content: center;
+      backdrop-filter: blur(4px);
+    }
+    .modal-bg.open { display: flex; animation: fadeIn 0.2s ease; }
+
+    .modal {
+      background: var(--bg-raised);
+      border: 1px solid var(--bg-border);
+      border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+      width: 100%;
+      max-width: 680px;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 2rem 2rem 3rem;
+      animation: fadeUp 0.3s var(--ease);
+    }
+    .modal-close {
+      float: right;
+      background: var(--bg-hover);
+      border: 1px solid var(--bg-border);
+      border-radius: var(--radius);
+      width: 32px; height: 32px;
+      cursor: pointer;
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      display: flex; align-items: center; justify-content: center;
+      transition: all var(--speed);
+    }
+    .modal-close:hover { border-color: var(--alert); color: var(--alert); }
+    .modal-title {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 0.2rem;
+      clear: both;
+    }
+    .modal-name-en { font-size: 0.82rem; color: var(--text-dim); margin-bottom: 0.75rem; }
+
+    /* 视频占位 */
+    .video-ph {
+      background: var(--bg-hover);
+      border: 1px dashed var(--bg-border);
+      border-radius: var(--radius);
+      height: 180px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      margin: 1.25rem 0;
+      color: var(--text-dim);
+    }
+    .video-ph__icon { font-size: 2rem; }
+    .video-ph p { font-size: 0.8rem; }
+
+    /* 肌肉区块 */
+    .muscle-box {
+      background: var(--bg-hover);
+      border: 1px solid var(--bg-border);
+      border-radius: var(--radius);
+      padding: 1rem 1.25rem;
+      margin: 1rem 0;
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+    .muscle-box__fig { font-size: 3rem; line-height: 1; }
+    .muscle-primary   { font-size: 0.9rem; color: var(--accent); font-weight: 600; margin-bottom: 0.25rem; }
+    .muscle-secondary { font-size: 0.82rem; color: var(--text-secondary); }
+
+    /* 步骤列表 */
+    .steps-ol { counter-reset: st; margin: 0.75rem 0; }
+    .steps-ol li {
+      counter-increment: st;
+      display: flex;
+      gap: 0.75rem;
+      margin-bottom: 0.7rem;
+      align-items: flex-start;
+      font-size: 0.9rem;
+      line-height: 1.65;
+      color: var(--text-primary);
+    }
+    .steps-ol li::before {
+      content: counter(st);
+      background: var(--accent);
+      color: #0d0d0f;
+      border-radius: 3px;
+      width: 20px; height: 20px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.72rem;
+      font-weight: 800;
+      font-family: var(--font-display);
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    /* 感受 / 禁忌 */
+    .feel-item {
+      display: flex;
+      gap: 0.5rem;
+      font-size: 0.875rem;
+      padding: 0.25rem 0;
+      line-height: 1.5;
+    }
+
+    /* Section 小标题 */
+    .msec-title {
+      font-family: var(--font-display);
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin: 1.5rem 0 0.6rem;
+    }
+  </style>
+</head>
+<body>
+  <div id="nav"></div>
+
+  <main class="lib-page">
+    <div class="container">
+      <div class="lib-header">
+        <div>
+          <h1>动作<br>库</h1>
+          <p>点击查看肌肉说明、步骤和注意事项</p>
+        </div>
+      </div>
+
+      <!-- 筛选 -->
+      <div class="filter-bar">
+        <button class="fb active" onclick="filter('all',this)">全部</button>
+        <button class="fb" onclick="filter('glute',this)">臀部</button>
+        <button class="fb" onclick="filter('lower',this)">腿部</button>
+        <button class="fb" onclick="filter('upper',this)">上肢</button>
+        <button class="fb" onclick="filter('core',this)">核心</button>
+        <button class="fb" onclick="filter('stretch',this)">拉伸</button>
+        <button class="fb" onclick="filter('novice',this)">新手推荐</button>
+        <button class="fb" onclick="filter('period',this)">经期适用</button>
+      </div>
+
+      <div class="lib-grid" id="libGrid"></div>
+    </div>
+  </main>
+
+  <!-- Modal -->
+  <div class="modal-bg" id="modalBg" onclick="closeModal(event)">
+    <div class="modal" id="modalBox">
+      <button class="modal-close" onclick="closeModal()">✕</button>
+      <div id="modalContent"></div>
+    </div>
+  </div>
+
+  <script src="../js/app.js"></script>
+  <script>
+    /* ── 动作数据库 ── */
+    const EX = [
+      {
+        id:'glute-bridge', icon:'🍑', name:'臀桥', en:'Glute Bridge',
+        cats:['glute','novice','period'], diff:1, equip:'none',
+        primary:'臀大肌', secondary:'腘绳肌、核心稳定肌',
+        sets:'3组 × 15次', video:'GLUTE-001-臀桥-L1.mp4',
+        steps:['仰卧，膝盖弯曲约90°，脚掌踩实地面','深吸气，呼气时夹臀，将臀部推离地面','最高点停1秒，感受臀部收紧','慢慢放下，腰部最后落地'],
+        feel:['✅ 臀部有明显收紧感','✅ 大腿后侧轻微参与感','❌ 腰痛说明代偿了，放低幅度'],
+        cautions:['腰椎间盘突出急性期先咨询医生','月经期腹部强烈痉挛时可缩小幅度或跳过'],
+        progress:['进阶：单腿臀桥','进阶：加弹力带','简化：缩小幅度'],
+        periodOk:true,
+      },
+      {
+        id:'side-clam', icon:'🦀', name:'蚌式开合', en:'Clamshell',
+        cats:['glute','novice','period'], diff:1, equip:'none',
+        primary:'臀中肌', secondary:'臀大肌',
+        sets:'每侧3组 × 12次', video:'GLUTE-002-蚌式开合-L1.mp4',
+        steps:['侧卧，膝盖弯曲45°，双脚并拢','保持脚跟并拢，呼气时将上方膝盖向上打开','打开至最大，停1秒，不让骨盆翻转','慢慢合上，不完全放松再做下一次'],
+        feel:['✅ 臀部外侧有酸胀感','❌ 腰椎不应该旋转或骨盆翻转'],
+        cautions:['如果臀部没感觉、腰在动——放慢速度'],
+        progress:['进阶：加弹力带（套膝盖上方）'],
+        periodOk:true,
+      },
+      {
+        id:'squat', icon:'🏋️', name:'徒手深蹲', en:'Bodyweight Squat',
+        cats:['lower','novice'], diff:1, equip:'none',
+        primary:'股四头肌、臀大肌', secondary:'腘绳肌、核心',
+        sets:'3组 × 12次', video:'LOWER-001-深蹲-L1.mp4',
+        steps:['双脚与肩同宽，脚尖微微外展15–30°','吸气，核心收紧，屈髋屈膝向下坐','大腿与地面平行（或能控制的深度），膝盖跟脚尖一致','呼气，用脚跟发力站起来'],
+        feel:['✅ 大腿前侧和臀部都有发力感','❌ 膝盖不要内扣','❌ 腰不要过度前倾'],
+        cautions:['膝盖有伤先咨询医生','经期腹部不适时不建议大重量'],
+        progress:['进阶：哑铃深蹲','简化：靠墙深蹲'],
+        periodOk:false,
+      },
+      {
+        id:'plank', icon:'⬛', name:'平板支撑', en:'Forearm Plank',
+        cats:['core','novice'], diff:1, equip:'none',
+        primary:'腹横肌（核心）', secondary:'肩部稳定肌、臀部',
+        sets:'3组 × 20–30秒', video:'CORE-001-平板支撑-L1.mp4',
+        steps:['俯卧，双前臂撑地，肘在肩正下方','脚趾支撑下半身，撑成一条直线','收紧腹部（像被人打肚子），夹紧臀部','正常呼吸，保持设定时间，不要憋气'],
+        feel:['✅ 腹部持续紧绷','✅ 肩膀有稳定感','❌ 不应该腰塌下去或翘臀'],
+        cautions:['经期严重腹胀时可跳过'],
+        progress:['进阶：单腿平板','简化：跪姿平板'],
+        periodOk:false,
+      },
+      {
+        id:'cat-cow', icon:'🧘', name:'猫牛式', en:'Cat-Cow',
+        cats:['stretch','novice','period'], diff:1, equip:'none',
+        primary:'脊椎活动度', secondary:'腹部、背部',
+        sets:'2组 × 10次（配合呼吸）', video:'STRETCH-001-猫牛式-L1.mp4',
+        steps:['四肢撑地，手在肩下，膝在髋下，脊椎中立','吸气：肚子向下沉，抬头抬臀（牛式）','呼气：腹部收紧，脊椎向上拱（猫式）','配合呼吸，缓慢流畅交替'],
+        feel:['✅ 脊椎每节都有活动感'],
+        cautions:['腰椎间盘突出急性期幅度要小'],
+        progress:[],
+        periodOk:true,
+      },
+      {
+        id:'rdl', icon:'🦵', name:'罗马尼亚硬拉', en:'Romanian Deadlift',
+        cats:['lower','glute'], diff:2, equip:'dumbell',
+        primary:'腘绳肌、臀大肌', secondary:'竖脊肌',
+        sets:'3–4组 × 10次', video:'LOWER-002-罗马尼亚硬拉-L2.mp4',
+        steps:['双脚与髋同宽，双手握哑铃置于大腿前','微微屈膝，髋关节向后推，背部保持直线','哑铃沿大腿前侧滑至小腿中部，感受大腿后侧拉伸','收紧臀部，将髋部推回站直，不用腰来拉'],
+        feel:['✅ 大腿后侧有明显拉伸感','✅ 站起时臀部有收紧感','❌ 腰不要弓起'],
+        cautions:['腰椎有问题先从轻重量开始','保持背部中立位是关键'],
+        progress:['进阶：加大重量','简化：徒手感受动作模式'],
+        periodOk:false,
+      },
+      {
+        id:'bird-dog', icon:'🦅', name:'鸟狗式', en:'Bird-Dog',
+        cats:['core','novice','period'], diff:1, equip:'none',
+        primary:'核心稳定肌（多裂肌）', secondary:'臀肌、肩稳定肌',
+        sets:'每侧3组 × 10次', video:'CORE-002-鸟狗式-L1.mp4',
+        steps:['四肢撑地，脊椎中立位','呼气时同时伸出右臂和左腿，背部不旋转','手脚与地面平行，保持2秒','慢慢收回，换另一侧'],
+        feel:['✅ 核心持续用力，背部很稳','❌ 腰椎不应该旋转'],
+        cautions:['手腕不适者可垫毛巾'],
+        progress:['进阶：手脚下加弹力带'],
+        periodOk:true,
+      },
+      {
+        id:'dumbbell-row', icon:'🔙', name:'单臂哑铃划船', en:'Single-Arm DB Row',
+        cats:['upper'], diff:2, equip:'dumbell',
+        primary:'背阔肌、菱形肌', secondary:'肱二头肌、肩胛稳定肌',
+        sets:'每侧3组 × 10次', video:'UPPER-001-单臂划船-L2.mp4',
+        steps:['一侧膝盖和手撑在凳子上，另一手持哑铃下垂','保持背部平行地面，肩膀不歪','呼气，将哑铃拉向腰部，肘靠近身体','吸气，缓慢放下，全程控制（不甩）'],
+        feel:['✅ 背部（肩胛骨内侧）有夹紧感','❌ 不应该耸肩或身体旋转'],
+        cautions:['肩袖受伤先咨询医生'],
+        progress:['进阶：加大重量'],
+        periodOk:false,
+      },
+    ];
+
+    /* ── 渲染网格 ── */
+    document.addEventListener('DOMContentLoaded', () => {
+      renderGrid(EX);
+      const hash = location.hash.slice(1);
+      if (hash) { const e = EX.find(x=>x.id===hash); if (e) open(e); }
+    });
+
+    function renderGrid(list) {
+      const g = document.getElementById('libGrid');
+      if (!list.length) {
+        g.innerHTML = '<p class="lib-empty">没有符合条件的动作</p>';
+        return;
+      }
+      g.innerHTML = list.map(e => `
+        <div class="ex-card" onclick='open(EX.find(x=>x.id==="${e.id}"))'>
+          <div class="ex-card__icon">${e.icon}</div>
+          <div class="ex-card__arr">›</div>
+          <div class="ex-card__name">${e.name}</div>
+          <div class="ex-card__name-en">${e.en}</div>
+          <div class="ex-card__meta">
+            ${stars(e.diff)}
+            ${e.periodOk ? '<span class="tag tag--red">经期✓</span>' : ''}
+            <span class="tag tag--dim">${e.equip==='none'?'无器械':'需器械'}</span>
+          </div>
+        </div>`).join('');
+    }
+
+    function stars(d) {
+      return `<span class="tag tag--green">${'★'.repeat(d)}${'☆'.repeat(3-d)}</span>`;
+    }
+
+    function filter(cat, btn) {
+      document.querySelectorAll('.fb').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      renderGrid(cat==='all' ? EX : EX.filter(e=>e.cats.includes(cat)));
+    }
+
+    function open(e) {
+      if (!e) return;
+      document.getElementById('modalContent').innerHTML = `
+        <div style="margin-bottom:1.25rem;overflow:hidden">
+          <button class="modal-close" onclick="closeModal()" style="float:right">✕</button>
+          <div style="font-size:2rem;margin-bottom:0.5rem">${e.icon}</div>
+          <div class="modal-title">${e.name}</div>
+          <div class="modal-name-en">${e.en}</div>
+          <div style="display:flex;gap:0.4rem;flex-wrap:wrap">
+            ${stars(e.diff)}
+            ${e.periodOk ? '<span class="tag tag--red">经期适用 ✓</span>' : ''}
+            <span class="tag tag--dim">${e.equip==='none'?'无器械':'需要器械'}</span>
+          </div>
+        </div>
+
+        <div class="video-ph">
+          <div class="video-ph__icon">▶</div>
+          <p>${e.video}</p>
+          <p style="font-size:0.7rem">上传视频后将在此播放</p>
+        </div>
+
+        <div class="muscle-box">
+          <div class="muscle-box__fig">🏃‍♀️</div>
+          <div>
+            <div class="muscle-primary">🔴 主要：${e.primary}</div>
+            <div class="muscle-secondary">⚪ 辅助：${e.secondary}</div>
+          </div>
+        </div>
+
+        <div class="alert alert--green">📋 参考组数：${e.sets}</div>
+
+        <p class="msec-title">动作步骤</p>
+        <ol class="steps-ol">${e.steps.map(s=>`<li>${esc(s)}</li>`).join('')}</ol>
+
+        <p class="msec-title">你应该感受到</p>
+        ${e.feel.map(f=>`<div class="feel-item"><span>${f.slice(0,2)}</span><span>${esc(f.slice(2))}</span></div>`).join('')}
+
+        <p class="msec-title">注意事项</p>
+        ${e.cautions.map(c=>`<div class="feel-item"><span>⚠️</span><span>${esc(c)}</span></div>`).join('')}
+
+        ${e.progress.length ? `
+        <p class="msec-title">变体 / 进阶</p>
+        ${e.progress.map(p=>`<div class="feel-item"><span>💡</span><span>${esc(p)}</span></div>`).join('')}` : ''}
+      `;
+      document.getElementById('modalBg').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal(e) {
+      if (e && e.target !== document.getElementById('modalBg')) return;
+      document.getElementById('modalBg').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+  </script>
+</body>
+</html>

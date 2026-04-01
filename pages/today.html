@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>今日计划 · Body Notes</title>
+  <link rel="stylesheet" href="../css/style.css" />
+  <style>
+    /* ══ 体感问卷 ══ */
+    .ci-page {
+      min-height: calc(100vh - 60px);
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 2.5rem 1.5rem 5rem;
+    }
+    .ci-wrap { width: 100%; max-width: 520px; }
+
+    /* 顶部进度条 */
+    .ci-prog { display: flex; gap: 5px; margin-bottom: 3rem; }
+    .ci-seg {
+      flex: 1; height: 3px;
+      border-radius: var(--radius-pill);
+      background: var(--bg-border);
+      transition: background 0.3s;
+    }
+    .ci-seg.done   { background: var(--accent); box-shadow: 0 0 6px var(--accent-glow); }
+    .ci-seg.active { background: rgba(181,255,71,0.45); }
+
+    .ci-q { display: none; }
+    .ci-q.active { display: block; animation: fadeUp 0.3s var(--ease); }
+
+    .ci-q__num {
+      font-family: var(--font-display);
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.6rem;
+    }
+    .ci-q h2 {
+      font-family: var(--font-display);
+      font-size: clamp(1.6rem, 4vw, 2.2rem);
+      font-weight: 800;
+      text-transform: uppercase;
+      line-height: 1;
+      margin-bottom: 0.5rem;
+    }
+    .ci-q .hint {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      margin-bottom: 1.75rem;
+    }
+    .multi-hint {
+      font-family: var(--font-display);
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.75rem;
+    }
+    .ci-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 1.75rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--bg-border);
+    }
+    .ci-back {
+      font-family: var(--font-display);
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      background: none;
+      border: none;
+      cursor: pointer;
+      transition: color var(--speed);
+    }
+    .ci-back:hover { color: var(--text-primary); }
+
+    /* ══ 计划结果 ══ */
+    .plan-page { display: none; padding: 2rem 1.5rem 5rem; }
+    .plan-page.show { display: block; animation: fadeIn 0.35s ease; }
+
+    /* 顶部状态横幅 */
+    .plan-banner {
+      border-radius: var(--radius-lg);
+      padding: 1.5rem 2rem;
+      margin-bottom: 2rem;
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+    }
+    .plan-banner__phase {
+      font-size: 2.5rem;
+      flex-shrink: 0;
+    }
+    .plan-banner__body {}
+    .plan-banner__title {
+      font-family: var(--font-display);
+      font-size: 1.3rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      line-height: 1;
+      margin-bottom: 0.3rem;
+    }
+    .plan-banner__sub {
+      font-size: 0.82rem;
+      opacity: 0.75;
+    }
+
+    /* Tab 切换 */
+    .plan-tabs {
+      display: flex;
+      gap: 0;
+      border-bottom: 1px solid var(--bg-border);
+      margin-bottom: 2rem;
+    }
+    .plan-tab {
+      padding: 0.75rem 1.5rem;
+      font-family: var(--font-display);
+      font-size: 0.88rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      cursor: pointer;
+      background: none;
+      border: none;
+      color: var(--text-dim);
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      transition: all var(--speed);
+    }
+    .plan-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+    .plan-panel { display: none; }
+    .plan-panel.show { display: block; animation: fadeIn 0.25s ease; }
+
+    /* 训练区块标题 */
+    .block-label {
+      font-family: var(--font-display);
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 0.6rem;
+      margin-top: 1.5rem;
+    }
+
+    /* 动作行 */
+    .ex-row {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem 1.25rem;
+      background: var(--bg-raised);
+      border: 1px solid var(--bg-border);
+      border-radius: var(--radius);
+      margin-bottom: 0.5rem;
+      cursor: pointer;
+      transition: all var(--speed);
+      text-decoration: none;
+      color: inherit;
+    }
+    .ex-row:hover { border-color: var(--accent); background: var(--bg-hover); }
+    .ex-row__ico {
+      width: 42px; height: 42px;
+      background: var(--bg-hover);
+      border-radius: var(--radius);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem;
+      flex-shrink: 0;
+      border: 1px solid var(--bg-border);
+    }
+    .ex-row__body { flex: 1; }
+    .ex-row__body strong {
+      font-family: var(--font-display);
+      font-size: 0.95rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      display: block;
+      margin-bottom: 0.1rem;
+    }
+    .ex-row__body small { font-size: 0.78rem; color: var(--text-secondary); }
+    .ex-row__arr { color: var(--text-dim); font-size: 1.1rem; }
+
+    /* 提示行 */
+    .rest-note {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+      padding: 0.75rem 1rem;
+      background: var(--bg-raised);
+      border: 1px solid var(--bg-border);
+      border-radius: var(--radius);
+      margin-top: 1rem;
+    }
+
+    /* 饮食区 */
+    .meal-block {
+      background: var(--bg-raised);
+      border: 1px solid var(--bg-border);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+      margin-bottom: 0.75rem;
+    }
+    .meal-block__label {
+      font-family: var(--font-display);
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.6rem;
+    }
+    .meal-block p { font-size: 0.9rem; line-height: 1.75; color: var(--text-primary); }
+    .tips-block {
+      background: var(--accent-dim);
+      border: 1px solid rgba(181,255,71,0.15);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+      margin-top: 1.25rem;
+    }
+    .tips-block__label {
+      font-family: var(--font-display);
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.75rem;
+    }
+    .tips-block li {
+      font-size: 0.875rem;
+      color: var(--accent);
+      padding: 0.3rem 0;
+      display: flex;
+      gap: 0.5rem;
+    }
+    .tips-block li::before { content: '▸'; flex-shrink: 0; }
+
+    /* 完成记录 */
+    .done-section {
+      margin-top: 3rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--bg-border);
+      text-align: center;
+    }
+    .done-section p {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      margin-bottom: 1rem;
+    }
+    .done-btns { display: flex; gap: 0.6rem; justify-content: center; flex-wrap: wrap; }
+    .done-btn {
+      padding: 0.55rem 1.1rem;
+      border-radius: var(--radius);
+      border: 1px solid var(--bg-border);
+      background: var(--bg-raised);
+      cursor: pointer;
+      font-size: 0.82rem;
+      font-family: var(--font-body);
+      color: var(--text-secondary);
+      transition: all var(--speed);
+    }
+    .done-btn:hover  { border-color: var(--accent); color: var(--accent); }
+    .done-btn.active { background: var(--accent); color: #0d0d0f; border-color: var(--accent); font-weight: 600; }
+  </style>
+</head>
+<body>
+  <div id="nav"></div>
+
+  <!-- ══════ 体感问卷 ══════ -->
+  <div class="ci-page" id="checkinPage">
+    <div class="ci-wrap">
+      <div class="ci-prog">
+        <div class="ci-seg active" id="seg1"></div>
+        <div class="ci-seg"        id="seg2"></div>
+        <div class="ci-seg"        id="seg3"></div>
+        <div class="ci-seg"        id="seg4"></div>
+      </div>
+
+      <!-- Q1 能量感 -->
+      <div class="ci-q active" id="cq1">
+        <p class="ci-q__num">01 / 04</p>
+        <h2>今天能量<br>感怎样？</h2>
+        <p class="hint">凭直觉选，不用想太多</p>
+        <div class="opts">
+          <button class="option-card" data-key="energy" data-val="low"  onclick="pickQ(this)"><span class="option-emoji">😴</span> 很低，昏沉</button>
+          <button class="option-card" data-key="energy" data-val="mid"  onclick="pickQ(this)"><span class="option-emoji">😐</span> 还好，一般</button>
+          <button class="option-card" data-key="energy" data-val="high" onclick="pickQ(this)"><span class="option-emoji">⚡</span> 不错，有劲</button>
+        </div>
+        <div class="ci-nav"><span></span><button class="btn btn--primary" onclick="nextQ(1)">下一题 →</button></div>
+      </div>
+
+      <!-- Q2 不适（多选） -->
+      <div class="ci-q" id="cq2">
+        <p class="ci-q__num">02 / 04</p>
+        <h2>身体有哪里<br>不舒服吗？</h2>
+        <p class="hint">多选，或选「没有」</p>
+        <p class="multi-hint">可多选</p>
+        <div class="opts">
+          <button class="option-card" data-val="cramps"   onclick="multiQ(this)"><span class="option-emoji">🩸</span> 肚子/腹部不适（经期）</button>
+          <button class="option-card" data-val="back"     onclick="multiQ(this)"><span class="option-emoji">🔧</span> 腰酸背痛</button>
+          <button class="option-card" data-val="legs"     onclick="multiQ(this)"><span class="option-emoji">🦵</span> 腿沉 / 水肿感</button>
+          <button class="option-card" data-val="headache" onclick="multiQ(this)"><span class="option-emoji">🤕</span> 头疼或头晕</button>
+          <button class="option-card" data-val="none"     onclick="pickQ(this,'discomfort')"><span class="option-emoji">✨</span> 没有，挺好的</button>
+        </div>
+        <div class="ci-nav">
+          <button class="ci-back" onclick="prevQ(2)">← 上一题</button>
+          <button class="btn btn--primary" onclick="nextQ(2)">下一题 →</button>
+        </div>
+      </div>
+
+      <!-- Q3 睡眠 -->
+      <div class="ci-q" id="cq3">
+        <p class="ci-q__num">03 / 04</p>
+        <h2>昨晚睡眠<br>怎么样？</h2>
+        <p class="hint">大概评估一下</p>
+        <div class="opts">
+          <button class="option-card" data-key="sleep" data-val="poor" onclick="pickQ(this)"><span class="option-emoji">😫</span> 很差，不到5小时</button>
+          <button class="option-card" data-key="sleep" data-val="ok"   onclick="pickQ(this)"><span class="option-emoji">😑</span> 一般，5–6小时</button>
+          <button class="option-card" data-key="sleep" data-val="good" onclick="pickQ(this)"><span class="option-emoji">😊</span> 不错，7小时以上</button>
+        </div>
+        <div class="ci-nav">
+          <button class="ci-back" onclick="prevQ(3)">← 上一题</button>
+          <button class="btn btn--primary" onclick="nextQ(3)">下一题 →</button>
+        </div>
+      </div>
+
+      <!-- Q4 周期阶段 -->
+      <div class="ci-q" id="cq4">
+        <p class="ci-q__num">04 / 04</p>
+        <h2>现在大约是<br>哪个阶段？</h2>
+        <p class="hint" id="phaseHint">系统预测供参考，可以修改</p>
+        <div class="opts">
+          <button class="option-card" data-key="phase" data-val="menstrual"  onclick="pickQ(this)"><span class="option-emoji">🔴</span> 月经期（第1–5天）</button>
+          <button class="option-card" data-key="phase" data-val="follicular" onclick="pickQ(this)"><span class="option-emoji">🟡</span> 卵泡期（第6–13天）</button>
+          <button class="option-card" data-key="phase" data-val="ovulation"  onclick="pickQ(this)"><span class="option-emoji">🟢</span> 排卵期（第14天前后）</button>
+          <button class="option-card" data-key="phase" data-val="luteal"     onclick="pickQ(this)"><span class="option-emoji">🟣</span> 黄体期（第15天以后）</button>
+          <button class="option-card" data-key="phase" data-val="unknown"    onclick="pickQ(this)"><span class="option-emoji">⚪</span> 不确定 / 不追踪</button>
+        </div>
+        <div class="ci-nav">
+          <button class="ci-back" onclick="prevQ(4)">← 上一题</button>
+          <button class="btn btn--primary" onclick="generate()">生成今日计划 →</button>
+        </div>
+      </div>
+
+    </div><!-- /ci-wrap -->
+  </div>
+
+  <!-- ══════ 计划结果 ══════ -->
+  <div class="plan-page" id="planPage">
+    <div class="container" style="max-width:720px">
+
+      <div class="plan-banner" id="planBanner">
+        <div class="plan-banner__phase" id="bannerEmoji">🟢</div>
+        <div class="plan-banner__body">
+          <div class="plan-banner__title" id="bannerTitle">卵泡期 · 中高强度</div>
+          <div class="plan-banner__sub"  id="bannerSub">今天是个好日子，放手练</div>
+        </div>
+      </div>
+
+      <div class="alert alert--red" id="planWarn" style="display:none"></div>
+
+      <div class="plan-tabs">
+        <button class="plan-tab active" onclick="switchTab('w')">💪 今日训练</button>
+        <button class="plan-tab"       onclick="switchTab('d')">🥗 今日饮食</button>
+      </div>
+
+      <div class="plan-panel show" id="ppWorkout"></div>
+      <div class="plan-panel"     id="ppDiet"></div>
+
+    </div>
+  </div>
+
+  <script src="../js/app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      requireAuth();
+      // 预填周期阶段
+      const ob = getOnboarding();
+      if (ob.lastPeriodDate) {
+        const lenMap = { short:25, normal:28, long:32, unknown_len:28 };
+        const { phase, dayOfCycle } = calcPhase(ob.lastPeriodDate, lenMap[ob.cycleLen] || 28);
+        CI.phase = phase;
+        document.querySelectorAll('#cq4 .option-card').forEach(b => {
+          if (b.dataset.val === phase) b.classList.add('selected');
+        });
+        const info = PHASES[phase];
+        document.getElementById('phaseHint').textContent =
+          `系统推算：${info.label}（第${dayOfCycle}天），可修改`;
+      }
+    });
+
+    /* ── 体感答案暂存 ── */
+    const CI = { energy:null, discomfort:[], sleep:null, phase:'unknown' };
+    let curQ = 1;
+
+    function pickQ(btn, keyOverride) {
+      const key = keyOverride || btn.dataset.key;
+      if (!key) return;
+      // 找同组
+      btn.closest('.opts, .opts--2').querySelectorAll(`.option-card[data-key="${key}"]`)
+        .forEach(b => b.classList.remove('selected'));
+      // 不适的"没有"也清多选
+      if (key === 'discomfort') {
+        btn.closest('.opts').querySelectorAll('.option-card').forEach(b => b.classList.remove('selected'));
+        CI.discomfort = [btn.dataset.val];
+      } else {
+        CI[key] = btn.dataset.val;
+      }
+      btn.classList.add('selected');
+    }
+
+    function multiQ(btn) {
+      // 取消「没有」
+      btn.closest('.opts').querySelector('[data-val="none"]').classList.remove('selected');
+      CI.discomfort = CI.discomfort.filter(x => x === 'none' ? false : true);
+
+      btn.classList.toggle('selected');
+      const v = btn.dataset.val;
+      CI.discomfort = btn.classList.contains('selected')
+        ? [...new Set([...CI.discomfort, v])]
+        : CI.discomfort.filter(x => x !== v);
+    }
+
+    function nextQ(n) {
+      if (n===1 && !CI.energy) { alert('请选择能量感'); return; }
+      if (n===3 && !CI.sleep)  { alert('请选择睡眠情况'); return; }
+      show('ci', n+1);
+    }
+    function prevQ(n) { show('ci', n-1); }
+
+    function show(type, n) {
+      curQ = n;
+      if (type === 'ci') {
+        document.querySelectorAll('.ci-q').forEach(q => q.classList.remove('active'));
+        document.getElementById(`cq${n}`).classList.add('active');
+      }
+      updateSegs();
+    }
+    function updateSegs() {
+      for (let i=1;i<=4;i++){
+        const s=document.getElementById(`seg${i}`);
+        s.className='ci-seg'+(i<curQ?' done':i===curQ?' active':'');
+      }
+    }
+
+    /* ── 生成计划 ── */
+    function generate() {
+      saveCheckin({ ...CI });
+      const plan = buildPlan(CI);
+      savePlan({ ci: CI, plan });
+      renderPlan(plan);
+      document.getElementById('checkinPage').style.display = 'none';
+      document.getElementById('planPage').classList.add('show');
+    }
+
+    /* ────────────────────────────────
+       推荐规则引擎
+       ──────────────────────────────── */
+    function buildPlan(ci) {
+      const ob = getOnboarding();
+      const novice    = ob.exp === 'beginner';
+      const hasEquip  = ob.equip && (ob.equip.includes('home_eq') || ob.equip.includes('gym'));
+      const hasGym    = ob.equip && ob.equip.includes('gym');
+
+      const { phase:p, energy:e, sleep:s, discomfort:d } = ci;
+      const hasCramps  = d.includes('cramps');
+      const hasHead    = d.includes('headache');
+
+      let intensity, wType, dietKey;
+
+      // 月经期
+      if (p==='menstrual') {
+        intensity = (e==='low'||hasCramps) ? 'rest' : 'light';
+        wType     = (e==='low'||hasCramps) ? 'stretch' : 'lower_glute';
+        dietKey   = 'iron';
+      }
+      // 卵泡期
+      else if (p==='follicular') {
+        intensity = e==='high'&&!novice ? 'high' : e==='low' ? 'light' : 'mid';
+        wType     = e==='high'&&!novice ? 'full_strength' : 'full_light';
+        dietKey   = 'protein_carb';
+      }
+      // 排卵期
+      else if (p==='ovulation') {
+        intensity = e!=='low' ? 'high' : 'mid';
+        wType     = 'full_strength';
+        dietKey   = 'protein_carb';
+      }
+      // 黄体期
+      else if (p==='luteal') {
+        intensity = (e==='low'||s==='poor') ? 'light' : 'mid';
+        wType     = 'full_light';
+        dietKey   = 'magnesium';
+      }
+      // 未知
+      else {
+        intensity = e==='low' ? 'light' : 'mid';
+        wType     = 'full_light';
+        dietKey   = 'balanced';
+      }
+
+      // 睡眠差 → 降档
+      if (s==='poor' && intensity==='high') intensity='mid';
+      // 头晕 → 强制修复
+      if (hasHead) { intensity='rest'; wType='stretch'; }
+      // 新手限制
+      if (novice && wType==='full_strength') wType='full_light';
+
+      return {
+        phase:p, intensity, wType, dietKey,
+        exercises: getExercises(wType),
+        diet: getDiet(dietKey),
+        hasCramps, hasHead, novice,
+      };
+    }
+
+    /* 动作数据 */
+    function getExercises(type) {
+      const db = {
+        stretch: {
+          warmup: [],
+          main: [
+            {ico:'🧘',name:'猫牛式',       sets:'2组×10次',    note:'跟着呼吸节奏'},
+            {ico:'🤸',name:'仰卧膝抱胸',   sets:'每侧30秒×3次',note:'感受腰部放松'},
+            {ico:'🌙',name:'婴儿式',       sets:'保持60秒',    note:'正常呼吸'},
+            {ico:'🌀',name:'腹式深呼吸',   sets:'3分钟',       note:'吸气鼓肚，呼气收紧'},
+          ],
+          cooldown:[],
+        },
+        lower_glute: {
+          warmup:[{ico:'🚶',name:'臀部激活走',sets:'来回各10步',note:''}],
+          main:[
+            {ico:'🍑',name:'臀桥',         sets:'3组×15次',note:'夹臀，腰不拱'},
+            {ico:'🦀',name:'侧卧蚌式开合', sets:'每侧3组×12次',note:'感受臀中肌'},
+            {ico:'🦵',name:'站姿臀后踢',   sets:'每侧3组×15次',note:'核心收紧'},
+          ],
+          cooldown:[{ico:'🌿',name:'大腿前侧拉伸',sets:'每侧30秒',note:''}],
+        },
+        full_light: {
+          warmup:[{ico:'🚶',name:'原地踏步',sets:'3分钟',note:''}],
+          main:[
+            {ico:'🏋️',name:'徒手深蹲',   sets:'3组×12次',note:'膝盖跟脚尖方向一致'},
+            {ico:'🍑',name:'臀桥',        sets:'3组×15次',note:'夹臀'},
+            {ico:'⬛',name:'平板支撑',    sets:'3组×20秒',note:'不要塌腰'},
+            {ico:'🦅',name:'鸟狗式',      sets:'每侧3组×10次',note:'背部保持平稳'},
+          ],
+          cooldown:[{ico:'🌿',name:'全身拉伸',sets:'5分钟',note:''}],
+        },
+        full_strength: {
+          warmup:[{ico:'🌡',name:'动态热身',sets:'5分钟',note:'重点活动髋和肩'}],
+          main:[
+            {ico:'🏋️',name:'哑铃深蹲',      sets:'4组×10次（可加重）',note:'最后2次有挑战感'},
+            {ico:'🦵',name:'罗马尼亚硬拉',  sets:'4组×10次',note:'感受大腿后侧控制'},
+            {ico:'💪',name:'哑铃推胸',       sets:'3组×10次',note:'肘部45°角'},
+            {ico:'🔙',name:'单臂哑铃划船',  sets:'每侧3组×10次',note:'拉至腰部，不甩'},
+            {ico:'🍑',name:'单腿臀桥',       sets:'3组×12次',note:'骨盆保持水平'},
+          ],
+          cooldown:[{ico:'🌿',name:'拉伸+泡沫轴',sets:'8分钟',note:''}],
+        },
+      };
+      return db[type] || db['full_light'];
+    }
+
+    /* 饮食数据 */
+    function getDiet(key) {
+      const db = {
+        iron:{
+          focus:'补铁 + 补镁 + 温热食物',
+          breakfast:'鸡蛋2个 + 菠菜炒饭\n温热豆浆或姜茶（避免冷饮）',
+          lunch:'瘦红肉/猪肝 + 深色蔬菜 + 杂粮饭\n或红豆糙米饭 + 清炒菠菜',
+          dinner:'鸡汤/鱼汤 + 大量蔬菜 + 少量主食',
+          tips:['多吃菠菜、红肉、豆类（补铁）','深色巧克力1–2小块补镁缓解痉挛','全天温水或姜茶，避免冷饮','避免咖啡因过量'],
+        },
+        protein_carb:{
+          focus:'高蛋白 + 适量增加碳水',
+          breakfast:'燕麦碗（牛奶+蛋白粉）+ 鸡蛋2个 + 坚果',
+          lunch:'鸡胸肉/鱼 + 糙米饭（今天可多吃100g）+ 绿叶蔬菜',
+          dinner:'豆腐/瘦肉 + 大量蔬菜 + 适量主食',
+          tips:['训练后30分钟内补蛋白（希腊酸奶/鸡蛋）','多喝水，目标2000ml','黄金期，吃好才能长肌肉'],
+        },
+        magnesium:{
+          focus:'稳血糖 + 补镁 + 减少刺激',
+          breakfast:'全麦吐司 + 牛油果 + 水煮蛋\n或无糖豆浆 + 燕麦',
+          lunch:'瘦肉 + 杂粮饭 + 大量蔬菜（避免精白米单吃）',
+          dinner:'清蒸鱼 + 深绿蔬菜 + 小份杂粮饭\n睡前少量坚果+香蕉（助眠）',
+          tips:['咖啡只喝上午1杯，下午不喝','避免高糖甜食','香蕉、菠菜含镁，多吃','多喝水帮助排水肿'],
+        },
+        balanced:{
+          focus:'均衡饮食 + 保证蛋白质',
+          breakfast:'鸡蛋 + 主食 + 蔬菜',
+          lunch:'蛋白质（肉/豆腐）+ 蔬菜 + 主食',
+          dinner:'轻量均衡，不要太晚吃',
+          tips:['每餐有蛋白质（一个手掌大小）','多蔬菜，主食不要完全戒','多喝水'],
+        },
+      };
+      return db[key] || db['balanced'];
+    }
+
+    /* ── 渲染结果 ── */
+    function renderPlan(plan) {
+      const info = PHASES[plan.phase] || PHASES['unknown'];
+      const iLabels = { rest:'今日以修复为主', light:'轻度训练日', mid:'中强度训练日', high:'冲！今天黄金期' };
+
+      // 横幅
+      const banner = document.getElementById('planBanner');
+      banner.style.background = info.bg;
+      banner.style.color      = info.color;
+      document.getElementById('bannerEmoji').textContent = info.emoji;
+      document.getElementById('bannerTitle').textContent = `${info.label} · ${iLabels[plan.intensity]}`;
+      document.getElementById('bannerSub').textContent   = plan.novice ? '新手模式：先学好动作模式' : '根据你的体感和周期定制';
+
+      // 特殊警示
+      const warnEl = document.getElementById('planWarn');
+      if (plan.hasCramps) {
+        warnEl.textContent = '⚠️ 检测到经期腹部不适，已切换为轻度/修复计划。痉挛严重时可只散步。';
+        warnEl.style.display = 'block';
+      } else if (plan.hasHead) {
+        warnEl.textContent = '⚠️ 头晕/头痛期间不宜高强度运动，今日已调整为拉伸。';
+        warnEl.style.display = 'block';
+      }
+
+      // 训练面板
+      const ex = plan.exercises;
+      const restNote = {rest:'—', light:'组间休息 60–90秒', mid:'组间休息 60秒', high:'组间休息 45秒（保持效率）'};
+      let wHTML = '';
+      if (ex.warmup?.length) {
+        wHTML += `<p class="block-label">热身</p>`;
+        ex.warmup.forEach(e => { wHTML += exRowHTML(e); });
+      }
+      wHTML += `<p class="block-label">主训练</p>`;
+      ex.main.forEach(e => { wHTML += exRowHTML(e); });
+      if (ex.cooldown?.length) {
+        wHTML += `<p class="block-label">放松</p>`;
+        ex.cooldown.forEach(e => { wHTML += exRowHTML(e); });
+      }
+      wHTML += `<div class="rest-note">⏱ ${restNote[plan.intensity]}</div>`;
+      wHTML += `
+        <div class="done-section">
+          <p>今天练完了吗？（记录一下）</p>
+          <div class="done-btns">
+            <button class="done-btn" onclick="markDone(this,'done')">✅ 完成了</button>
+            <button class="done-btn" onclick="markDone(this,'partial')">⚡ 做了一部分</button>
+            <button class="done-btn" onclick="markDone(this,'skip')">😮‍💨 今天没练</button>
+          </div>
+        </div>`;
+      document.getElementById('ppWorkout').innerHTML = wHTML;
+
+      // 饮食面板
+      const d = plan.diet;
+      document.getElementById('ppDiet').innerHTML = `
+        <div class="alert alert--green" style="margin-bottom:1.5rem">🎯 今日重点：${d.focus}</div>
+        <div class="meal-block"><div class="meal-block__label">早餐</div><p>${d.breakfast.replace(/\n/g,'<br>')}</p></div>
+        <div class="meal-block"><div class="meal-block__label">午餐</div><p>${d.lunch.replace(/\n/g,'<br>')}</p></div>
+        <div class="meal-block"><div class="meal-block__label">晚餐</div><p>${d.dinner.replace(/\n/g,'<br>')}</p></div>
+        <div class="tips-block">
+          <div class="tips-block__label">今日注意</div>
+          <ul>${d.tips.map(t=>`<li>${esc(t)}</li>`).join('')}</ul>
+        </div>`;
+    }
+
+    function exRowHTML(e) {
+      return `
+        <a href="library.html" class="ex-row">
+          <div class="ex-row__ico">${e.ico}</div>
+          <div class="ex-row__body">
+            <strong>${esc(e.name)}</strong>
+            <small>${esc(e.sets)}${e.note?' · '+esc(e.note):''}</small>
+          </div>
+          <span class="ex-row__arr">›</span>
+        </a>`;
+    }
+
+    function switchTab(t) {
+      document.querySelectorAll('.plan-tab').forEach((b,i)=>b.classList.toggle('active',(i===0&&t==='w')||(i===1&&t==='d')));
+      document.getElementById('ppWorkout').classList.toggle('show', t==='w');
+      document.getElementById('ppDiet').classList.toggle('show', t==='d');
+    }
+
+    function markDone(btn, val) {
+      document.querySelectorAll('.done-btn').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      const list = getCheckins();
+      if (list[0]) { list[0].completion=val; localStorage.setItem('bn_checkins',JSON.stringify(list)); }
+    }
+  </script>
+</body>
+</html>

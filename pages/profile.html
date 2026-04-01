@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>个人中心 · Body Notes</title>
+  <link rel="stylesheet" href="../css/style.css" />
+  <style>
+    .profile-page { padding: 2.5rem 1.5rem 5rem; }
+
+    /* 用户头部 */
+    .p-header {
+      background: var(--bg-raised);
+      border: 1px solid var(--bg-border);
+      border-radius: var(--radius-lg);
+      padding: 1.75rem;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+    }
+    .p-avatar {
+      width: 52px; height: 52px;
+      background: var(--accent-dim);
+      border: 1px solid rgba(181,255,71,0.2);
+      border-radius: var(--radius);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem;
+      flex-shrink: 0;
+    }
+    .p-name {
+      font-family: var(--font-display);
+      font-size: 1.3rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 0.2rem;
+    }
+    .p-meta { font-size: 0.82rem; color: var(--text-secondary); }
+
+    /* 区块 */
+    .section {
+      background: var(--bg-raised);
+      border: 1px solid var(--bg-border);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      margin-bottom: 1.25rem;
+    }
+    .section__title {
+      font-family: var(--font-display);
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 1.25rem;
+    }
+
+    /* 数据行 */
+    .d-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.65rem 0;
+      border-bottom: 1px solid var(--bg-border);
+      font-size: 0.88rem;
+    }
+    .d-row:last-child { border-bottom: none; }
+    .d-row .lbl { color: var(--text-secondary); }
+    .d-row .val { font-weight: 500; }
+
+    /* 周期进度条 */
+    .cycle-strip {
+      display: flex;
+      height: 24px;
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin: 1rem 0 0.5rem;
+    }
+    .cs { display:flex; align-items:center; justify-content:center;
+          font-family:var(--font-display); font-size:0.65rem; font-weight:700;
+          letter-spacing:0.06em; text-transform:uppercase; color:#0d0d0f; }
+
+    /* 体感表 */
+    .ci-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+    .ci-table th {
+      text-align: left;
+      font-family: var(--font-display);
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      padding: 0 0.5rem 0.75rem;
+      border-bottom: 1px solid var(--bg-border);
+    }
+    .ci-table td {
+      padding: 0.6rem 0.5rem;
+      border-bottom: 1px solid var(--bg-border);
+      vertical-align: middle;
+    }
+    .ci-table tr:last-child td { border-bottom: none; }
+
+    /* 计划记录 */
+    .plan-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.7rem 0;
+      border-bottom: 1px solid var(--bg-border);
+      font-size: 0.85rem;
+    }
+    .plan-row:last-child { border-bottom: none; }
+    .plan-row .pr-date { font-size: 0.75rem; color: var(--text-dim); margin-top: 0.15rem; }
+
+    /* 空状态 */
+    .empty {
+      text-align: center;
+      padding: 2rem;
+      color: var(--text-dim);
+      font-size: 0.85rem;
+    }
+    .empty a { color: var(--accent); }
+  </style>
+</head>
+<body>
+  <div id="nav"></div>
+
+  <main class="profile-page">
+    <div class="container" style="max-width:720px">
+
+      <!-- 用户头部 -->
+      <div class="p-header">
+        <div class="p-avatar">👤</div>
+        <div style="flex:1">
+          <div class="p-name" id="pName">-</div>
+          <div class="p-meta" id="pMeta">-</div>
+        </div>
+        <a href="onboarding.html" class="btn btn--outline" style="font-size:0.78rem;padding:0.4rem 0.85rem">编辑信息</a>
+      </div>
+
+      <!-- 周期 -->
+      <div class="section" id="cycleSection">
+        <div class="section__title">周期概览</div>
+        <div id="cycleContent">
+          <div class="empty">还没有周期信息<br><a href="onboarding.html">去填写 →</a></div>
+        </div>
+      </div>
+
+      <!-- 体感历史 -->
+      <div class="section">
+        <div class="section__title">近7天体感记录</div>
+        <div id="ciHistory"></div>
+      </div>
+
+      <!-- 计划历史 -->
+      <div class="section">
+        <div class="section__title">最近训练计划</div>
+        <div id="planHistory"></div>
+      </div>
+
+      <!-- 账户 -->
+      <div class="section">
+        <div class="section__title">账户</div>
+        <div class="d-row">
+          <span class="lbl">登录邮箱</span>
+          <span class="val" id="pEmail">-</span>
+        </div>
+        <div style="display:flex;gap:0.75rem;justify-content:flex-end;margin-top:1.25rem;flex-wrap:wrap">
+          <button class="btn btn--outline" style="font-size:0.78rem;padding:0.4rem 0.85rem" onclick="clearData()">清除本地数据</button>
+          <button class="btn btn--danger"  style="font-size:0.78rem;padding:0.4rem 0.85rem" onclick="if(confirm('确定退出？'))logoutUser()">退出登录</button>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <script src="../js/app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      if (!requireAuth()) return;
+      const user = getCurrentUser();
+      const ob   = getOnboarding();
+
+      // 用户信息
+      document.getElementById('pName').textContent  = user.name || user.email;
+      document.getElementById('pEmail').textContent = user.email;
+      const goalMap = { gain_muscle:'增肌塑形', maintain:'维持状态', energy:'改善精力', cycle_health:'改善周期不适' };
+      const expMap  = { beginner:'新手', casual:'偶尔运动', returning:'重返健身', regular:'规律训练' };
+      document.getElementById('pMeta').textContent =
+        [goalMap[ob.goal], expMap[ob.exp]].filter(Boolean).join(' · ') || '尚未设置';
+
+      // 周期
+      if (ob.lastPeriodDate && ob.cycleStatus === 'regular') {
+        const lenMap = { short:25, normal:28, long:32, unknown_len:28 };
+        const cl = lenMap[ob.cycleLen] || 28;
+        const { phase, dayOfCycle } = calcPhase(ob.lastPeriodDate, cl);
+        const info = PHASES[phase];
+
+        const nextMs   = new Date(ob.lastPeriodDate).getTime() + cl * 86400000;
+        const daysLeft = Math.ceil((nextMs - Date.now()) / 86400000);
+
+        document.getElementById('cycleContent').innerHTML = `
+          <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem;margin-bottom:1rem">
+            <div style="display:flex;align-items:center;gap:0.6rem">
+              <span style="font-size:1.4rem">${info.emoji}</span>
+              <span style="font-family:var(--font-display);font-weight:800;font-size:1.1rem;text-transform:uppercase;color:${info.color}">${info.label}</span>
+              <span class="tag tag--dim">第 ${dayOfCycle} 天</span>
+            </div>
+            <span style="font-size:0.8rem;color:var(--text-secondary)">
+              下次月经约 <strong style="color:var(--text-primary)">${daysLeft>0?daysLeft+'天后':'今天或已开始'}</strong>
+            </span>
+          </div>
+          <div class="cycle-strip">
+            <div class="cs" style="flex:5;background:var(--phase-menstrual)">月经</div>
+            <div class="cs" style="flex:8;background:var(--phase-follicular)">卵泡</div>
+            <div class="cs" style="flex:3;background:var(--phase-ovulation)">排卵</div>
+            <div class="cs" style="flex:${cl-16};background:var(--phase-luteal)">黄体期</div>
+          </div>
+          <div style="display:flex;gap:0.75rem;font-size:0.75rem;color:var(--text-dim);flex-wrap:wrap">
+            <span>🔴 月经期</span><span>🟡 卵泡期</span><span>🟢 排卵期</span><span>🟣 黄体期</span>
+          </div>
+          <div class="d-row" style="margin-top:1rem"><span class="lbl">上次月经</span><span class="val">${fmtDate(ob.lastPeriodDate)}</span></div>
+          <div class="d-row"><span class="lbl">周期长度</span><span class="val">${cl} 天</span></div>`;
+      } else if (ob.cycleStatus === 'pregnant') {
+        document.getElementById('cycleContent').innerHTML =
+          '<div class="alert alert--red">怀孕模式：请以医生建议为主，本站仅提供轻量参考</div>';
+      } else if (ob.cycleStatus) {
+        document.getElementById('cycleContent').innerHTML =
+          '<p style="font-size:0.85rem;color:var(--text-secondary)">已选择不追踪周期，计划基于体感生成。</p>';
+      }
+
+      // 体感历史
+      const cis = getCheckins().slice(0, 7);
+      const eL  = { low:'😴 低', mid:'😐 一般', high:'⚡ 充沛' };
+      const sL  = { poor:'😫 差', ok:'😑 一般', good:'😊 好' };
+      document.getElementById('ciHistory').innerHTML = cis.length ? `
+        <table class="ci-table">
+          <thead><tr><th>日期</th><th>能量</th><th>睡眠</th><th>阶段</th><th>完成</th></tr></thead>
+          <tbody>${cis.map(c=>`
+            <tr>
+              <td>${fmtDate(c.date)}</td>
+              <td>${eL[c.energy]||'-'}</td>
+              <td>${sL[c.sleep]||'-'}</td>
+              <td>${(PHASES[c.phase]||PHASES.unknown).emoji} ${(PHASES[c.phase]||PHASES.unknown).label}</td>
+              <td>${{done:'✅',partial:'⚡',skip:'😮‍💨'}[c.completion]||'-'}</td>
+            </tr>`).join('')}
+          </tbody>
+        </table>` :
+        '<div class="empty">还没有记录<br><a href="today.html">填写今日体感 →</a></div>';
+
+      // 计划历史
+      const plans = getPlans().slice(0, 8);
+      const iL = { rest:'修复', light:'轻度', mid:'中度', high:'高强度' };
+      document.getElementById('planHistory').innerHTML = plans.length ? plans.map(p=>`
+        <div class="plan-row">
+          <div>
+            <div style="font-family:var(--font-display);font-weight:700;font-size:0.9rem;text-transform:uppercase">
+              ${(PHASES[p.plan?.phase]||PHASES.unknown).label} · ${iL[p.plan?.intensity]||''}
+            </div>
+            <div class="pr-date">${fmtDate(p.date)}</div>
+          </div>
+          <span class="tag tag--dim">${{done:'✅ 完成',partial:'⚡ 部分',skip:'跳过'}[p.ci?.completion]||'未记录'}</span>
+        </div>`).join('') :
+        '<div class="empty">还没有计划<br><a href="today.html">生成今日计划 →</a></div>';
+    });
+
+    function clearData() {
+      if (!confirm('清除全部体感和计划记录？账号不会删除。')) return;
+      ['bn_checkins','bn_plans'].forEach(k => localStorage.removeItem(k));
+      alert('已清除'); location.reload();
+    }
+  </script>
+</body>
+</html>
